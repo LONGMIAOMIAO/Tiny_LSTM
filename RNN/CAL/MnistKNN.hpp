@@ -34,6 +34,7 @@ double distance( const mat& xi, const mat& xj )
 //  不加锁的话，很多push_back是失败的，说明是非VECTOR的PUSH_BACK操作是非线程安全的。
 //  加mutex锁，5min20s， 95.29%
 //  开启-march=native， 95.29%  4min45s
+//  k = 10  96.68%
 void MnistKNN()
 {
     MNistData::loadMnist();
@@ -57,7 +58,7 @@ void MnistKNN()
         std::sort(vecCom.begin(), vecCom.end(),[]( Compare& c_1, Compare& c_2 ){ return c_1.distance < c_2.distance; });
 
         std::map<int,int> maxNumMap;
-        for( int j = 0; j < 50; j++ )
+        for( int j = 0; j < 10; j++ )
         {
             maxNumMap[ vecCom[j].value ]++;
         }
