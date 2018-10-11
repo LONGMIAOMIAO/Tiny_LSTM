@@ -6,6 +6,7 @@ namespace RNN
 {
 namespace MnistPerceptron
 {
+//  g++ Source.cpp -O3
 void MnistPerceptron()
 {
     MNistData::loadMnist();

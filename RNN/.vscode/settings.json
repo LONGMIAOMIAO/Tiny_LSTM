@@ -68,6 +68,7 @@
         "cinttypes": "cpp",
         "*.main": "cpp",
         "map": "cpp",
-        "unordered_set": "cpp"
+        "unordered_set": "cpp",
+        "*.cu": "cpp"
     }
 }

@@ -5,11 +5,7 @@ namespace RNN
     class Layer
     {
     public:
-        Layer()
-        {
-            left = new MidData;
-            right = new MidData;
-        }
+        Layer() : left( new MidData ), right( new MidData ){}
 
         virtual void calF() = 0;
         virtual void calB() = 0;
@@ -18,8 +14,4 @@ namespace RNN
         MidData* left;
         MidData* right;
     };
-
-
-
-
 }
