@@ -11,6 +11,6 @@ int main()
     //RNN::TEST::MnistLoad();
     //RNN::MnistPerceptron::MnistPerceptron();
     //RNN::MnistKNN::MnistKNN();
-    RNN::MnistRNN::MnistRNN();
-
+    //RNN::MnistRNN::MnistRNN();
+    RNN::MnistRNN::RNN_T_1();
 }

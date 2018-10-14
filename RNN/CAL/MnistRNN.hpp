@@ -6,19 +6,90 @@ namespace RNN
 {
 namespace MnistRNN
 {
+
+void RNN_T_1()
+{
+    mat m1(1,4);
+    m1.setConstant(0);
+    m1(0,0) = 1;
+
+    mat m2(1,4);
+    m2.setConstant(0);
+    m2(0,1) = 1;
+
+    mat m3(1,4);
+    m3.setConstant(0);
+    m3(0,2) = 1;
+
+    mat m4(1,4);
+    m4.setConstant(0);
+    m4(0,3) = 1;
+
+
+    std::vector<MidData*> feedData{ new MidData, new MidData, new MidData, new MidData };
+    std::for_each( feedData.begin(), feedData.end(), []( MidData*& mid )
+    { 
+        mid->data_f.resize(1,4);
+        //mid->data_f.setRandom();
+        mid->data_f.setConstant(0.0);
+    } );
+    Layer_Net_RNN rnn_T( 4, 4, 4, 4, 4, feedData );
+
+    for( int i = 0; i < 200; i++ )
+    {
+        if( i % 2 == 0 )
+        {
+            feedData[0]->data_f = m1;
+            feedData[1]->data_f = m2;
+            feedData[2]->data_f = m3;
+            feedData[3]->data_f = m4;
+        }
+        else if( i % 2 == 1 )
+        {
+            feedData[0]->data_f = m4;
+            feedData[1]->data_f = m3;
+            feedData[2]->data_f = m2;
+            feedData[3]->data_f = m1;
+        }
+
+        rnn_T.calForward();
+
+        if( i % 2 == 0 )
+        {
+            rnn_T.end->data_b = rnn_T.end->data_f - m1;
+        }
+        else if( i % 2 == 1 )
+        {
+            rnn_T.end->data_b = rnn_T.end->data_f - m4;
+        }
+
+        rnn_T.calBackward();
+        rnn_T.upW();
+
+        if( i == 198 )
+        {
+            std::cout << "End IS:" << std::endl << rnn_T.end->data_f << std::endl;
+        }
+        if( i == 199 )
+        {
+            std::cout << "End IS:" << std::endl << rnn_T.end->data_f << std::endl;
+        }
+    }
+}
+
 void MnistRNN()
 {
     std::cout << "Good Better Best!" << std::endl;
 
-    std::vector<MidData*> feedData{ new MidData, new MidData, new MidData, new MidData, new MidData };
+    std::vector<MidData*> feedData{ new MidData, new MidData, new MidData, new MidData };
     std::for_each( feedData.begin(), feedData.end(), []( MidData*& mid )
     { 
-        mid->data_f.resize(1,3);
+        mid->data_f.resize(1,4);
         //mid->data_f.setRandom();
         mid->data_f.setConstant(1.0);
     } );
     
-    Layer_Net_RNN rnn_T( 5, 2, 2, 3, 2, feedData );
+    Layer_Net_RNN rnn_T( 4, 4, 4, 4, 4, feedData );
 
     std::cout << "=================================================" << std::endl;
     rnn_T.calForward();

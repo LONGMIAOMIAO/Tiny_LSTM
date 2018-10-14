@@ -28,8 +28,8 @@ class Layer_RNN //: public Layer
 
     void upW()
     {
-        w_l_r = w_l_r - 0.5 * (left->data_f.transpose()) * (out->data_b);
-        w_b_t = w_b_t - 0.5 * (bottom->data_f.transpose()) * (out->data_b);
+        w_l_r = w_l_r - 0.01 * (left->data_f.transpose()) * (out->data_b);
+        w_b_t = w_b_t - 0.01 * (bottom->data_f.transpose()) * (out->data_b);
     }
 
     mat &w_l_r;
@@ -46,12 +46,12 @@ class Layer_Net_RNN
     Layer_Net_RNN(int layer_Num, int l_r_r, int l_r_c, int b_t_r, int b_t_c, std::vector<MidData *> &vec_Feed_Data) : vec_Feed_Data(vec_Feed_Data)
     {
         w_l_r.resize(l_r_r, l_r_c);
-        //w_l_r.setRandom();
-        w_l_r.setConstant(1.0);
+        w_l_r.setRandom();
+        //w_l_r.setConstant(1.0);
 
         w_b_t.resize(b_t_r, b_t_c);
-        //w_b_t.setRandom();
-        w_b_t.setConstant(1.0);
+        w_b_t.setRandom();
+        //w_b_t.setConstant(1.0);
 
         for (int i = 0; i < layer_Num; i++)
         {
@@ -61,9 +61,9 @@ class Layer_Net_RNN
 
         //  create internalData
         start = new MidData;
-        start->data_f.resize(1, 2);
+        start->data_f.resize(1, 4);
         //  start->data_f.setRandom();
-        start->data_f.setConstant(1.0);
+        start->data_f.setConstant(0.0);
         vec_Layer_RNN.front().left = start;
         for (int i = 0; i < layer_Num - 1; i++)
         {
@@ -74,8 +74,8 @@ class Layer_Net_RNN
             vec_Mid_Data.push_back(mid);
         }
         end = new MidData;
-        end->data_b.resize(1, 2);
-        end->data_b.setConstant(1);
+        end->data_b.resize(1, 4);
+        end->data_b.setConstant(1.0);
         vec_Layer_RNN.back().out = end;
         //  cout InternalData
         for (int i = 0; i < layer_Num - 1; i++)
