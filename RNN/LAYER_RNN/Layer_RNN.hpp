@@ -17,19 +17,21 @@ class Layer_RNN //: public Layer
 
     void calForward()
     {
-        out->data_f = left->data_f * w_l_r + bottom->data_f * w_b_t;
+        out->data_f = tanh_F(left->data_f * w_l_r + bottom->data_f * w_b_t);
     }
 
     void calBackward()
     {
-        left->data_b = out->data_b * w_l_r.transpose();
-        bottom->data_b = out->data_b * w_b_t.transpose();
+        // left->data_b = out->data_b * w_l_r.transpose();
+        // bottom->data_b = out->data_b * w_b_t.transpose();
+        left->data_b = (out->data_b.array() * tanh_B(out->data_f).array()).matrix() * w_l_r.transpose();
+        bottom->data_b = (out->data_b.array() * tanh_B(out->data_f).array()).matrix() * w_b_t.transpose();  
     }
 
     void upW()
     {
-        w_l_r = w_l_r - 0.01 * (left->data_f.transpose()) * (out->data_b);
-        w_b_t = w_b_t - 0.01 * (bottom->data_f.transpose()) * (out->data_b);
+        w_l_r = w_l_r - 0.5 * (left->data_f.transpose()) * (out->data_b);
+        w_b_t = w_b_t - 0.5 * (bottom->data_f.transpose()) * (out->data_b);
     }
 
     mat &w_l_r;
