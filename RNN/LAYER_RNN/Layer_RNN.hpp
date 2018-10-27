@@ -25,7 +25,7 @@ class Layer_RNN //: public Layer
         // left->data_b = out->data_b * w_l_r.transpose();
         // bottom->data_b = out->data_b * w_b_t.transpose();
         left->data_b = (out->data_b.array() * tanh_B(out->data_f).array()).matrix() * w_l_r.transpose();
-        bottom->data_b = (out->data_b.array() * tanh_B(out->data_f).array()).matrix() * w_b_t.transpose();  
+        bottom->data_b = (out->data_b.array() * tanh_B(out->data_f).array()).matrix() * w_b_t.transpose();
     }
 
     void upW()
@@ -121,7 +121,7 @@ class Layer_Net_RNN
         for (auto i = vec_Layer_RNN.begin(); i != vec_Layer_RNN.end(); i++)
         {
             (*i).upW();
-            
+
             std::cout << "l_r_w :" << std::endl
                       << (*i).w_l_r << std::endl;
 

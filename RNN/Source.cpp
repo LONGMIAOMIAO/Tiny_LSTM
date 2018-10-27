@@ -4,6 +4,7 @@
 #include "CAL/MnistPerceptron.hpp"
 #include "CAL/MnistKNN.hpp"
 #include "CAL/MnistRNN.hpp"
+#include "LAYER_RNN/Layer_LSTM.hpp"
 int main()
 {
     //RNN::TEST::Ful_T_1();

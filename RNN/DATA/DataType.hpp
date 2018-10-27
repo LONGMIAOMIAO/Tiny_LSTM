@@ -11,6 +11,7 @@ int colMax(const mat &m)
     return max_c_1;
 }
 
+//  tanh
 const mat tanh_F(const mat &inputMatrix)
 {
     return (inputMatrix.array().exp() - (-1.0 * inputMatrix).array().exp()) / (inputMatrix.array().exp() + (-1.0 * inputMatrix).array().exp());
@@ -19,6 +20,17 @@ const mat tanh_F(const mat &inputMatrix)
 const mat tanh_B(const mat &inputMatrix)
 {
     return 1 - inputMatrix.array() * inputMatrix.array();
+}
+
+//  sigmoid
+const mat sigmoid_F(const mat& inputMatrix)
+{
+    return 1.0 / ( (-1.0 * inputMatrix).array().exp() + 1.0 );
+}
+
+const mat sigmoid_B(const mat& inputMatrix)
+{
+    return inputMatrix.array() * ( 1 - inputMatrix.array() );
 }
 
 } // namespace RNN
