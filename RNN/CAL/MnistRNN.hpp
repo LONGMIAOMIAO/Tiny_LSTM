@@ -33,7 +33,7 @@ void RNN_T_1()
     });
     Layer_Net_RNN rnn_T(4, 4, 4, 4, 4, feedData);
 
-    for (int i = 0; i < 200; i++)
+    for (int i = 0; i < 1000; i++)
     {
         if (i % 2 == 0)
         {
@@ -64,7 +64,7 @@ void RNN_T_1()
         rnn_T.calBackward();
         rnn_T.upW();
 
-        if (i == 198)
+        if (i == 998)
         {
             std::cout << "End 0 IS:" << std::endl
                       << rnn_T.vec_Layer_RNN[0].out->data_f << std::endl;
@@ -75,7 +75,7 @@ void RNN_T_1()
             std::cout << "End 3 IS:" << std::endl
                       << rnn_T.end->data_f << std::endl;
         }
-        if (i == 199)
+        if (i == 999)
         {
             std::cout << "End 0 IS:" << std::endl
                       << rnn_T.vec_Layer_RNN[0].out->data_f << std::endl;
