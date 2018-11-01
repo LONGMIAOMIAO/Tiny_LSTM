@@ -5,6 +5,7 @@
 #include "CAL/MnistKNN.hpp"
 #include "CAL/MnistRNN.hpp"
 #include "LAYER_RNN/Layer_LSTM.hpp"
+#include "CAL/MnistLSTM.hpp"
 int main()
 {
     //RNN::TEST::Ful_T_1();
@@ -14,5 +15,6 @@ int main()
     //RNN::MnistKNN::MnistKNN();
     //RNN::MnistRNN::MnistRNN();
     //RNN::MnistRNN::RNN_T_1();
-    RNN::Test_LSTM();
+    //RNN::Test_LSTM();
+    RNN::MnistLSTM::MnistLSTM();
 }

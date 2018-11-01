@@ -23,8 +23,10 @@ public:
 
   void upW()
   {
-    w_l_o = w_l_o - 0.5 * (left_h->data_f.transpose()) * (out->data_b);
-    w_b_o = w_b_o - 0.5 * (bottom_x->data_f.transpose()) * (out->data_b);
+    //  w_l_o = w_l_o - 0.05 * (left_h->data_f.transpose()) * (out->data_b);
+    //  w_b_o = w_b_o - 0.05 * (bottom_x->data_f.transpose()) * (out->data_b);
+    w_l_o = w_l_o - 0.05 * (left_h->data_f.transpose()) * (out->data_b.array() * sigmoid_B(out->data_f).array()).matrix();
+    w_b_o = w_b_o - 0.05 * (bottom_x->data_f.transpose()) * (out->data_b.array() * sigmoid_B(out->data_f).array()).matrix();
   }
 
   mat &w_l_o;
@@ -55,8 +57,10 @@ public:
 
   void upW()
   {
-    w_l_o = w_l_o - 0.5 * (left_h->data_f.transpose()) * (out->data_b);
-    w_b_o = w_b_o - 0.5 * (bottom_x->data_f.transpose()) * (out->data_b);
+    // w_l_o = w_l_o - 0.05 * (left_h->data_f.transpose()) * (out->data_b);
+    // w_b_o = w_b_o - 0.05 * (bottom_x->data_f.transpose()) * (out->data_b);
+    w_l_o = w_l_o - 0.05 * (left_h->data_f.transpose()) * (out->data_b.array() * tanh_B(out->data_f).array()).matrix();
+    w_b_o = w_b_o - 0.05 * (bottom_x->data_f.transpose()) * (out->data_b.array() * tanh_B(out->data_f).array()).matrix();
   }
 
   mat &w_l_o;
@@ -87,8 +91,10 @@ public:
 
   void upW()
   {
-    w_l_o = w_l_o - 0.5 * (left_h->data_f.transpose()) * (out->data_b);
-    w_b_o = w_b_o - 0.5 * (bottom_x->data_f.transpose()) * (out->data_b);
+    // w_l_o = w_l_o - 0.05 * (left_h->data_f.transpose()) * (out->data_b);
+    // w_b_o = w_b_o - 0.05 * (bottom_x->data_f.transpose()) * (out->data_b);
+    w_l_o = w_l_o - 0.05 * (left_h->data_f.transpose()) * (out->data_b.array() * sigmoid_B(out->data_f).array()).matrix();
+    w_b_o = w_b_o - 0.05 * (bottom_x->data_f.transpose()) * (out->data_b.array() * sigmoid_B(out->data_f).array()).matrix();
   }
 
   mat &w_l_o;
@@ -162,8 +168,10 @@ public:
 
   void upW()
   {
-    w_l_o = w_l_o - 0.5 * (left_h->data_f.transpose()) * (out->data_b);
-    w_b_o = w_b_o - 0.5 * (bottom_x->data_f.transpose()) * (out->data_b);
+    // w_l_o = w_l_o - 0.05 * (left_h->data_f.transpose()) * (out->data_b);
+    // w_b_o = w_b_o - 0.05 * (bottom_x->data_f.transpose()) * (out->data_b);
+    w_l_o = w_l_o - 0.05 * (left_h->data_f.transpose()) * (out->data_b.array() * sigmoid_B(out->data_f).array()).matrix();
+    w_b_o = w_b_o - 0.05 * (bottom_x->data_f.transpose()) * (out->data_b.array() * sigmoid_B(out->data_f).array()).matrix();
   } 
 
   mat &w_l_o;
@@ -400,7 +408,7 @@ public:
     {
       (*i).calForward();
     }
-    std::cout << "Out is:******" << cell_LSTM_Vec.back().h_L4->out->data_f << std::endl;
+    //std::cout << "Out is:******" << cell_LSTM_Vec.back().h_L4->out->data_f << std::endl;
   }
 
   void calBackward()
@@ -525,12 +533,83 @@ void Test_LSTM()
   out_lable_vec.push_back(out_lable_1);
   //===================================================================
 
-  for( int i = 0; i < 10000; i ++ )
+  for( int i = 0; i < 5000; i ++ )
   {
     net_LSTM_T.setInitial( i%2, bottom_x_vec ); 
+
+    // std::cout << "w_b_o_compute:" << net_LSTM_T.w_b_o_compute << std::endl;
+    // std::cout << "w_l_o_compute:" << net_LSTM_T.w_l_o_compute << std::endl;
+
+    // std::cout << "w_b_o_update:" << net_LSTM_T.w_b_o_update << std::endl;
+    // std::cout << "w_l_o_update:" << net_LSTM_T.w_l_o_update << std::endl;
+
+    // std::cout << "w_b_o_forget:" << net_LSTM_T.w_b_o_forget << std::endl;
+    // std::cout << "w_l_o_forget:" << net_LSTM_T.w_l_o_forget << std::endl;
+
+    // std::cout << "w_b_o_output:" << net_LSTM_T.w_b_o_output << std::endl;
+    // std::cout << "w_l_o_output:" << net_LSTM_T.w_l_o_output << std::endl;
+
     net_LSTM_T.calForward();
+
+    // std::cout << "left_h:" << net_LSTM_T.cell_LSTM_Vec[0].compute_L1->left_h->data_f << std::endl;
+    // std::cout << "left_c:" << net_LSTM_T.cell_LSTM_Vec[0].c_L2->left_c->data_f << std::endl;
+    // std::cout << "left_Compute:" << net_LSTM_T.cell_LSTM_Vec[0].c_L2->left_Compute->data_f << std::endl;
+    // std::cout << "left_Forget:" << net_LSTM_T.cell_LSTM_Vec[0].c_L2->left_Forget->data_f << std::endl;
+    // std::cout << "left_Update:" << net_LSTM_T.cell_LSTM_Vec[0].c_L2->left_Update->data_f << std::endl;
+
+    // std::cout << "c_L2_out:" << net_LSTM_T.cell_LSTM_Vec[0].c_L2->out->data_f << std::endl;
+
+    // std::cout << "c_L3_out:" << net_LSTM_T.cell_LSTM_Vec[0].c_L3->out->data_f << std::endl;
+
+    // std::cout << "left_out:" << net_LSTM_T.cell_LSTM_Vec[0].output_L1->out->data_f << std::endl;
+
+    // std::cout << "c_L4_out:" << net_LSTM_T.cell_LSTM_Vec[0].h_L4->out->data_f << std::endl;
+
+    // std::cout << "============================================================================" << std::endl;
+
+    // std::cout << "left_h:" << net_LSTM_T.cell_LSTM_Vec[1].compute_L1->left_h->data_f << std::endl;
+    // std::cout << "left_c:" << net_LSTM_T.cell_LSTM_Vec[1].c_L2->left_c->data_f << std::endl;
+    // std::cout << "left_Compute:" << net_LSTM_T.cell_LSTM_Vec[1].c_L2->left_Compute->data_f << std::endl;
+    // std::cout << "left_Forget:" << net_LSTM_T.cell_LSTM_Vec[1].c_L2->left_Forget->data_f << std::endl;
+    // std::cout << "left_Update:" << net_LSTM_T.cell_LSTM_Vec[1].c_L2->left_Update->data_f << std::endl;
+
+    // std::cout << "c_L2_out:" << net_LSTM_T.cell_LSTM_Vec[1].c_L2->out->data_f << std::endl;
+
+    // std::cout << "c_L3_out:" << net_LSTM_T.cell_LSTM_Vec[1].c_L3->out->data_f << std::endl;
+
+    // std::cout << "left_out:" << net_LSTM_T.cell_LSTM_Vec[1].output_L1->out->data_f << std::endl;
+
+    // std::cout << "c_L4_out:" << net_LSTM_T.cell_LSTM_Vec[1].h_L4->out->data_f << std::endl;
+
+    // std::cout << "============================================================================" << std::endl;    
+
     net_LSTM_T.cell_LSTM_Vec.back().h_L4->out->data_b = net_LSTM_T.cell_LSTM_Vec.back().h_L4->out->data_f - out_lable_vec[i%2];
     net_LSTM_T.calBackward();
+
+    // std::cout << net_LSTM_T.cell_LSTM_Vec.back().h_L4->out->data_f << std::endl;
+
+    // std::cout << net_LSTM_T.cell_LSTM_Vec.back().h_L4->out->data_b << std::endl;
+
+    // std::cout << net_LSTM_T.cell_LSTM_Vec.back().h_L4->left_c_L3->data_f << std::endl;
+    // std::cout << net_LSTM_T.cell_LSTM_Vec.back().h_L4->left_Output->data_f << std::endl;
+
+    // std::cout << net_LSTM_T.cell_LSTM_Vec.back().h_L4->left_c_L3->data_b << std::endl;
+    // std::cout << net_LSTM_T.cell_LSTM_Vec.back().h_L4->left_Output->data_b << std::endl;
+
+    // std::cout << net_LSTM_T.cell_LSTM_Vec.back().output_L1->out->data_b << std::endl;
+    // std::cout << net_LSTM_T.cell_LSTM_Vec.back().c_L3->out->data_b << std::endl;
+    // std::cout << net_LSTM_T.cell_LSTM_Vec.back().c_L3->out->data_f << std::endl;
+    // std::cout << net_LSTM_T.cell_LSTM_Vec.back().c_L3->left->data_b << std::endl;
+
+    // std::cout << net_LSTM_T.cell_LSTM_Vec.back().c_L2->out->data_b << std::endl;
+
+    // std::cout << net_LSTM_T.cell_LSTM_Vec.back().c_L2->left_c->data_f << std::endl;
+
+    // std::cout << net_LSTM_T.cell_LSTM_Vec.back().c_L2->left_Forget->data_b << std::endl;
+
+    // std::cout << net_LSTM_T.cell_LSTM_Vec.back().c_L2->left_Forget->data_f << std::endl;
+
+    // std::cout << net_LSTM_T.cell_LSTM_Vec.back().c_L2->left_c->data_b << std::endl;
 
     net_LSTM_T.upW();
   }
