@@ -45,7 +45,7 @@ void MnistLSTM()
     classify.setRandom();
     MidData out;
 
-    for (int p = 0; p < 5; p++)
+    for (int p = 0; p < 1; p++)
     {
         for (int i = 0; i < 55000; i++)
         {
