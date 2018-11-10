@@ -47,14 +47,13 @@ void matMulKernel(Mat<T> *A, Mat<T> *B, Mat<T> *C)
 
 template <typename T>
 __device__ 
-T cal( Mat<T>* A, Mat<T>* B, int col, int i)
+T cal( Mat<T>* A, Mat<T>* B, int col, int i, int row)
 {
-    //return A->elements[ row * A->width + col ];
     T val = 0;
 
     for( int j = 0; j < 784; ++j )
     {
-        val += abs( getElement(A, col, j) - getElement(B, i, j) ); 
+        val += abs( getElement(A, col, j) - getElement(B, i * 200 + row , j) ); 
     }
     return val;
 }
@@ -63,12 +62,12 @@ template <typename T>
 __global__
 void calDistance( Mat<T>* A, Mat<T>* B, int i, Mat<T>* C )
 {
+    int row = threadIdx.y + blockIdx.y * blockDim.y;    
     int col = threadIdx.x + blockIdx.x * blockDim.x;
 
-    C->elements[col] = cal<T>( A, B, col, i );
-    //C->elements[col] = 3.0;
+    C->elements[ row * 55000 + col] = cal<T>( A, B, col, i, row );
+    //C->elements[ row * 55000 + col] = 3.33;
 }
-
 
 
 template <typename T>
@@ -148,28 +147,28 @@ void loadMnist( Mat<T>*& mat_L_Tr, Mat<T>*& mat_R_Tr, Mat<T>* mat_L_Te, Mat<T>* 
     }
 }
 
+
 //  nvcc Mnist_KNN_CU.cu -O3
 //  72s     96% correct
 int main()
 {
-    Mat<float>* mat_L_Tr;
-    Mat<float>* mat_R_Tr;
-    Mat<float>* mat_L_Te;
-    Mat<float>* mat_R_Te;
-    Mat<float>* mat_C;
+    Mat<double>* mat_L_Tr;
+    Mat<double>* mat_R_Tr;
+    Mat<double>* mat_L_Te;
+    Mat<double>* mat_R_Te;
+    Mat<double>* mat_C;
 
+    cudaMallocManaged( &mat_L_Tr, sizeof(Mat<double>) );
+    cudaMallocManaged( &mat_R_Tr, sizeof(Mat<double>) );
+    cudaMallocManaged( &mat_L_Te, sizeof(Mat<double>) );
+    cudaMallocManaged( &mat_R_Te, sizeof(Mat<double>) );  
+    cudaMallocManaged( &mat_C, sizeof(Mat<double>) );  
 
-    cudaMallocManaged( &mat_L_Tr, sizeof(Mat<float>) );
-    cudaMallocManaged( &mat_R_Tr, sizeof(Mat<float>) );
-    cudaMallocManaged( &mat_L_Te, sizeof(Mat<float>) );
-    cudaMallocManaged( &mat_R_Te, sizeof(Mat<float>) );  
-    cudaMallocManaged( &mat_C, sizeof(Mat<float>) );  
-
-    cudaMallocManaged( &mat_L_Tr->elements, 55000 * 784 * sizeof(float) );
-    cudaMallocManaged( &mat_R_Tr->elements, 55000 * 10  * sizeof(float) );
-    cudaMallocManaged( &mat_L_Te->elements, 10000 * 784 * sizeof(float) );
-    cudaMallocManaged( &mat_R_Te->elements, 10000 * 10  * sizeof(float) );
-    cudaMallocManaged( &mat_C->elements, 55000 * sizeof(float) );
+    cudaMallocManaged( &mat_L_Tr->elements, 55000 * 784 * sizeof(double) );
+    cudaMallocManaged( &mat_R_Tr->elements, 55000 * 10  * sizeof(double) );
+    cudaMallocManaged( &mat_L_Te->elements, 10000 * 784 * sizeof(double) );
+    cudaMallocManaged( &mat_R_Te->elements, 10000 * 10  * sizeof(double) );
+    cudaMallocManaged( &mat_C->elements, 200 * 55000 * sizeof(double) );
 
     mat_L_Tr->width     =    784;
     mat_L_Tr->height    =    55000;
@@ -184,58 +183,68 @@ int main()
     mat_R_Te->height    =    10000;
 
     mat_C->width    =   55000;
-    mat_C->height   =   1;
+    mat_C->height   =   200;
 
 
-    loadMnist<float>( mat_L_Tr, mat_R_Tr, mat_L_Te, mat_R_Te );
+    loadMnist<double>( mat_L_Tr, mat_R_Tr, mat_L_Te, mat_R_Te );
 
-    dim3 DimGrid(55, 1, 1);
+    // int bx = (55000 + 1024 - 1) / 1024;
+    // int by = 200;
+    // dim3 DimGrid( bx, by, 1 );
+    // dim3 DimBlock( 1024, 1, 1 );
+    
+    dim3 DimGrid(55, 200, 1);
     dim3 DimBlock(1000, 1, 1);
-
 
     auto start = clock();
     int totalNum = 0;
-    for( int i = 0; i < 10000; i++ )
+    for( int i = 0; i < 50; i++ )
     {
-        calDistance<float><<< DimGrid, DimBlock >>>( mat_L_Tr, mat_L_Te, i, mat_C );
+        calDistance<double><<< DimGrid, DimBlock >>>( mat_L_Tr, mat_L_Te, i, mat_C );
         cudaDeviceSynchronize();
 
-        std::pair<float,int> min_Pair;
-        min_Pair.first = mat_C->elements[0];
-        for( int j = 0; j < 55000; j++ )
+        for( int m = 0; m < 200; m++ )
         {
-            if( mat_C->elements[j] <= min_Pair.first )
-            {
-                min_Pair.first = mat_C->elements[j];
-                min_Pair.second = j;
-            }    
-        }
-        int seq = min_Pair.second;
+            std::pair<double,int> min_Pair;
+            min_Pair.first = mat_C->elements[ m * 55000 + 0];
 
-        int r_val = -1;
-        for( int k = 0; k < 10; k++ )
-        {
-            if ( mat_R_Tr->elements[ seq * 10 + k ] == 1 )
+            for( int j = 0; j < 55000; j++ )
             {
-                r_val = k;
-                break;
-            }        
-        }
+                if( mat_C->elements[ 55000 * m + j] <= min_Pair.first )
+                {
+                    min_Pair.first = mat_C->elements[ 55000 * m + j];
+                    min_Pair.second = j;
+                }    
+            }
 
-        int l_val = -2;
-        for( int k = 0; k < 10; k++ )
-        {
-            if ( mat_R_Te->elements[ i * 10 + k ] == 1 )
+            int seq = min_Pair.second;
+
+            int r_val = -1;
+            for( int k = 0; k < 10; k++ )
             {
-                l_val = k;
-                break;
-            }        
-        }
-        if( r_val == l_val )
-        {
-            totalNum++;
+                if ( mat_R_Tr->elements[ seq * 10 + k ] == 1 )
+                {
+                    r_val = k;
+                    break;
+                }        
+            }
+
+            int l_val = -2;
+            for( int k = 0; k < 10; k++ )
+            {
+                if ( mat_R_Te->elements[ (i * 200 + m) * 10 + k ] == 1 )
+                {
+                    l_val = k;
+                    break;
+                }        
+            }
+            if( r_val == l_val )
+            {
+                totalNum++;
+            }
         }
     }
+
     printf( "%d", totalNum );
     printf( "\n" );
     auto end = clock();
