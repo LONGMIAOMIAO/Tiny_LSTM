@@ -53,7 +53,7 @@ T cal( Mat<T>* A, Mat<T>* B, int col, int i, int row)
 
     for( int j = 0; j < 784; ++j )
     {
-        val += abs( getElement(A, col, j) - getElement(B, i * 200 + row , j) ); 
+        val += ( getElement(A, col, j) - getElement(B, i * 200 + row , j) ) * ( getElement(A, col, j) - getElement(B, i * 200 + row , j) ); 
     }
     return val;
 }
@@ -152,23 +152,23 @@ void loadMnist( Mat<T>*& mat_L_Tr, Mat<T>*& mat_R_Tr, Mat<T>* mat_L_Te, Mat<T>* 
 //  72s     96% correct
 int main()
 {
-    Mat<double>* mat_L_Tr;
-    Mat<double>* mat_R_Tr;
-    Mat<double>* mat_L_Te;
-    Mat<double>* mat_R_Te;
-    Mat<double>* mat_C;
+    Mat<float>* mat_L_Tr;
+    Mat<float>* mat_R_Tr;
+    Mat<float>* mat_L_Te;
+    Mat<float>* mat_R_Te;
+    Mat<float>* mat_C;
 
-    cudaMallocManaged( &mat_L_Tr, sizeof(Mat<double>) );
-    cudaMallocManaged( &mat_R_Tr, sizeof(Mat<double>) );
-    cudaMallocManaged( &mat_L_Te, sizeof(Mat<double>) );
-    cudaMallocManaged( &mat_R_Te, sizeof(Mat<double>) );  
-    cudaMallocManaged( &mat_C, sizeof(Mat<double>) );  
+    cudaMallocManaged( &mat_L_Tr, sizeof(Mat<float>) );
+    cudaMallocManaged( &mat_R_Tr, sizeof(Mat<float>) );
+    cudaMallocManaged( &mat_L_Te, sizeof(Mat<float>) );
+    cudaMallocManaged( &mat_R_Te, sizeof(Mat<float>) );  
+    cudaMallocManaged( &mat_C, sizeof(Mat<float>) );  
 
-    cudaMallocManaged( &mat_L_Tr->elements, 55000 * 784 * sizeof(double) );
-    cudaMallocManaged( &mat_R_Tr->elements, 55000 * 10  * sizeof(double) );
-    cudaMallocManaged( &mat_L_Te->elements, 10000 * 784 * sizeof(double) );
-    cudaMallocManaged( &mat_R_Te->elements, 10000 * 10  * sizeof(double) );
-    cudaMallocManaged( &mat_C->elements, 200 * 55000 * sizeof(double) );
+    cudaMallocManaged( &mat_L_Tr->elements, 55000 * 784 * sizeof(float) );
+    cudaMallocManaged( &mat_R_Tr->elements, 55000 * 10  * sizeof(float) );
+    cudaMallocManaged( &mat_L_Te->elements, 10000 * 784 * sizeof(float) );
+    cudaMallocManaged( &mat_R_Te->elements, 10000 * 10  * sizeof(float) );
+    cudaMallocManaged( &mat_C->elements, 200 * 55000 * sizeof(float) );
 
     mat_L_Tr->width     =    784;
     mat_L_Tr->height    =    55000;
@@ -186,7 +186,7 @@ int main()
     mat_C->height   =   200;
 
 
-    loadMnist<double>( mat_L_Tr, mat_R_Tr, mat_L_Te, mat_R_Te );
+    loadMnist<float>( mat_L_Tr, mat_R_Tr, mat_L_Te, mat_R_Te );
 
     // int bx = (55000 + 1024 - 1) / 1024;
     // int by = 200;
@@ -200,12 +200,12 @@ int main()
     int totalNum = 0;
     for( int i = 0; i < 50; i++ )
     {
-        calDistance<double><<< DimGrid, DimBlock >>>( mat_L_Tr, mat_L_Te, i, mat_C );
+        calDistance<float><<< DimGrid, DimBlock >>>( mat_L_Tr, mat_L_Te, i, mat_C );
         cudaDeviceSynchronize();
 
         for( int m = 0; m < 200; m++ )
         {
-            std::pair<double,int> min_Pair;
+            std::pair<float,int> min_Pair;
             min_Pair.first = mat_C->elements[ m * 55000 + 0];
 
             for( int j = 0; j < 55000; j++ )

@@ -54,7 +54,7 @@ T cal( Mat<T>* A, Mat<T>* B, int col, int i)
 
     for( int j = 0; j < 784; ++j )
     {
-        val += abs( getElement(A, col, j) - getElement(B, i, j) ); 
+        val += ( getElement(A, col, j) - getElement(B, i, j) ) * ( getElement(A, col, j) - getElement(B, i, j) ); 
     }
     return val;
 }
