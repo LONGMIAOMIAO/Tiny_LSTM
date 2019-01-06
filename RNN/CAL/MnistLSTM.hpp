@@ -7,6 +7,7 @@ namespace RNN
 {
 namespace MnistLSTM
 {
+//  g++ Source.cpp -O3
 void MnistLSTM()
 {
     MNistData::loadMnist();
@@ -45,7 +46,7 @@ void MnistLSTM()
     classify.setRandom();
     MidData out;
 
-    for (int p = 0; p < 1; p++)
+    for (int p = 0; p < 2; p++)
     {
         for (int i = 0; i < 55000; i++)
         {
@@ -65,7 +66,7 @@ void MnistLSTM()
 
             classify = classify - 0.05 * net_LSTM_T.cell_LSTM_Vec.back().h_L4->out->data_f.transpose() * out.data_b;
 
-            std::cout << i << ":::" << out.data_f << std::endl;
+            //std::cout << i << ":::" << out.data_f << std::endl;
         }
     }
 
