@@ -7,5 +7,6 @@ Mnist Accuracy  :  96%
 Net 结构        :   LSTM + Softmax_Cross_Entropy （seqLength = 28, inputSize = 28, hiddenSize = 128 ）   
 LSTM Cell 包括 Update Cell, Compute Cell, Forget Cell, Output Cell。  
 
-3、 水平有限，代码有不完善的地方请在ISSUE批评指正！
+3、 水平有限，代码有不完善的地方请在ISSUE批评指正！  
+
 4、 如果需要加载数据集的csv文件，请来神经网络设计研讨QQ群 826245492。
